@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?
+  password  String
+  createdAt DateTime @default(now())
+
+  // Relationships
+  appointments Appointment[]
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  duration    Int // Duration in minutes
+  description String?
+  createdAt   DateTime @default(now())
+
+  // Relationships
+  appointments Appointment[]
+  providers    ProviderService[]
+}
+
+model Provider {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+
+  // Relationships
+  appointments Appointment[]
+  services     ProviderService[]
+}
+
+model ProviderService {
+  providerId Int
+  serviceId  Int
+
+  provider Provider @relation(fields: [providerId], references: [id])
+  service  Service  @relation(fields: [serviceId], references: [id])
+
+  @@id([providerId, serviceId])
+}
+
+model Appointment {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  providerId Int
+  serviceId  Int
+  startTime  DateTime
+  duration   Int // Duration in minutes
+  status     String
+  bufferTime Int // Buffer time in minutes
+  createdAt  DateTime @default(now())
+
+  // Relationships
+  user     User     @relation(fields: [userId], references: [id])
+  provider Provider @relation(fields: [providerId], references: [id])
+  service  Service  @relation(fields: [serviceId], references: [id])
+}
