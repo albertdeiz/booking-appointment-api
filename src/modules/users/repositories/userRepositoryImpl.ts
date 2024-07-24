@@ -9,6 +9,7 @@ export class UserRepositoryImpl implements UserRepository {
         name: user.name,
         email: user.email,
         password: user.password, // Note: Ensure password hashing in real applications
+        phone: user.phone,
       },
     });
 
@@ -16,7 +17,10 @@ export class UserRepositoryImpl implements UserRepository {
       createdUser.id,
       createdUser.name,
       createdUser.email,
-      createdUser.password
+      createdUser.password,
+      createdUser.phone ?? undefined,
+      createdUser.updatedAt,
+      createdUser.createdAt
     );
   }
 
@@ -26,7 +30,15 @@ export class UserRepositoryImpl implements UserRepository {
     });
 
     return user
-      ? new User(user.id, user.name, user.email, user.password)
+      ? new User(
+          user.id,
+          user.name,
+          user.email,
+          user.password,
+          user.phone ?? undefined,
+          user.updatedAt,
+          user.createdAt
+        )
       : null;
   }
 
@@ -45,6 +57,7 @@ export class UserRepositoryImpl implements UserRepository {
         name: user.name,
         email: user.email,
         password: user.password, // Note: Ensure password hashing in real applications
+        phone: user.phone,
       },
     });
 
@@ -52,7 +65,10 @@ export class UserRepositoryImpl implements UserRepository {
       updatedUser.id,
       updatedUser.name,
       updatedUser.email,
-      updatedUser.password
+      updatedUser.password,
+      updatedUser.phone ?? undefined,
+      updatedUser.updatedAt,
+      updatedUser.createdAt
     );
   }
 

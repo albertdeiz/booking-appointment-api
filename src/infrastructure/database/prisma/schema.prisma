@@ -16,6 +16,7 @@ model User {
   email     String   @unique
   phone     String?
   password  String
+  updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
   // Relationships
@@ -27,6 +28,7 @@ model Service {
   name        String
   duration    Int // Duration in minutes
   description String?
+  updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
 
   // Relationships
@@ -47,6 +49,7 @@ model Provider {
 model ProviderService {
   providerId Int
   serviceId  Int
+  createdAt  DateTime @default(now())
 
   provider Provider @relation(fields: [providerId], references: [id])
   service  Service  @relation(fields: [serviceId], references: [id])
@@ -63,6 +66,7 @@ model Appointment {
   duration   Int // Duration in minutes
   status     String
   bufferTime Int // Buffer time in minutes
+  updatedAt  DateTime @updatedAt
   createdAt  DateTime @default(now())
 
   // Relationships

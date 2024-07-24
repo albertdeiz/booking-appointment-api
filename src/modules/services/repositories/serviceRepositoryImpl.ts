@@ -8,13 +8,17 @@ export class ServiceRepositoryImpl implements ServiceRepository {
       data: {
         name: service.name,
         duration: service.duration,
+        description: service.description,
       },
     });
 
     return new Service(
       createdService.id,
       createdService.name,
-      createdService.duration
+      createdService.duration,
+      createdService.description ?? undefined,
+      createdService.updatedAt,
+      createdService.createdAt
     );
   }
 
@@ -24,7 +28,14 @@ export class ServiceRepositoryImpl implements ServiceRepository {
     });
 
     return service
-      ? new Service(service.id, service.name, service.duration)
+      ? new Service(
+          service.id,
+          service.name,
+          service.duration,
+          service.description ?? undefined,
+          service.updatedAt,
+          service.createdAt
+        )
       : null;
   }
 
@@ -32,7 +43,15 @@ export class ServiceRepositoryImpl implements ServiceRepository {
     const services = await prisma.service.findMany();
 
     return services.map(
-      (service) => new Service(service.id, service.name, service.duration)
+      (service) =>
+        new Service(
+          service.id,
+          service.name,
+          service.duration,
+          service.description ?? undefined,
+          service.updatedAt,
+          service.createdAt
+        )
     );
   }
 
@@ -48,7 +67,10 @@ export class ServiceRepositoryImpl implements ServiceRepository {
     return new Service(
       updatedService.id,
       updatedService.name,
-      updatedService.duration
+      updatedService.duration,
+      updatedService.description ?? undefined,
+      updatedService.updatedAt,
+      updatedService.createdAt
     );
   }
 
