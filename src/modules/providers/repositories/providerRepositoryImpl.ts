@@ -9,33 +9,20 @@ export class ProviderRepositoryImpl implements ProviderRepository {
       data: {
         name: provider.name,
         services: {
-          connectOrCreate: provider.services.map(
-            ({ id, name, duration, description }) => ({
-              where: {
-                providerId_serviceId: {
-                  providerId: provider.id,
-                  serviceId: id,
-                },
-              },
-              create: {
-                service: {
-                  create: {
-                    name,
-                    duration,
-                    description,
-                  },
-                },
-              },
-            })
-          ),
+          connectOrCreate: provider.services.map((service) => ({
+            where: {
+              id: service.id,
+            },
+            create: {
+              name: service.name,
+              duration: service.duration,
+              description: service.description,
+            },
+          })),
         },
       },
       include: {
-        services: {
-          select: {
-            service: true,
-          },
-        },
+        services: true,
       },
     });
 
@@ -43,7 +30,7 @@ export class ProviderRepositoryImpl implements ProviderRepository {
       createdProvider.id,
       createdProvider.name,
       createdProvider.services.map(
-        ({ service }) => new Service(service.id, service.name, service.duration)
+        (service) => new Service(service.id, service.name, service.duration)
       ),
       createdProvider.createdAt
     );
@@ -55,11 +42,7 @@ export class ProviderRepositoryImpl implements ProviderRepository {
         id,
       },
       include: {
-        services: {
-          select: {
-            service: true,
-          },
-        },
+        services: {},
       },
     });
 
@@ -68,8 +51,7 @@ export class ProviderRepositoryImpl implements ProviderRepository {
           provider.id,
           provider.name,
           provider.services.map(
-            ({ service }) =>
-              new Service(service.id, service.name, service.duration)
+            (service) => new Service(service.id, service.name, service.duration)
           ),
           provider.createdAt
         )
@@ -79,11 +61,7 @@ export class ProviderRepositoryImpl implements ProviderRepository {
   async findAll(): Promise<Provider[]> {
     const providers = await prisma.provider.findMany({
       include: {
-        services: {
-          select: {
-            service: true,
-          },
-        },
+        services: true,
       },
     });
 
@@ -93,8 +71,7 @@ export class ProviderRepositoryImpl implements ProviderRepository {
           provider.id,
           provider.name,
           provider.services.map(
-            ({ service }) =>
-              new Service(service.id, service.name, service.duration)
+            (service) => new Service(service.id, service.name, service.duration)
           ),
           provider.createdAt
         )
@@ -108,25 +85,15 @@ export class ProviderRepositoryImpl implements ProviderRepository {
         name: provider.name,
         services: {
           set: provider.services.map(({ id, duration, name, description }) => ({
-            providerId_serviceId: {
-              providerId: provider.id,
-              serviceId: id,
-            },
-            service: {
-              id,
-              duration,
-              name,
-              description,
-            },
+            id,
+            duration,
+            name,
+            description,
           })),
         },
       },
       include: {
-        services: {
-          select: {
-            service: true,
-          },
-        },
+        services: true,
       },
     });
 
@@ -134,7 +101,7 @@ export class ProviderRepositoryImpl implements ProviderRepository {
       updatedProvider.id,
       updatedProvider.name,
       updatedProvider.services.map(
-        ({ service }) => new Service(service.id, service.name, service.duration)
+        (service) => new Service(service.id, service.name, service.duration)
       ),
       updatedProvider.createdAt
     );

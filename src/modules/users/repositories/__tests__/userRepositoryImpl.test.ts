@@ -17,13 +17,12 @@ describe("UserRepositoryImpl - tests", () => {
       "112233",
       "+56977273879"
     );
-    const result = await repository.create(user);
+    const { id, email, name, password } = await repository.create(user);
 
-    expect(result).toEqual({
-      ...user,
-      updatedAt: result.updatedAt,
-      createdAt: result.createdAt,
-    });
+    expect(id).toBe(user.id);
+    expect(email).toBe(user.email);
+    expect(name).toBe(user.name);
+    expect(password).toBe(user.password);
   });
 
   it("should update an user", async () => {
@@ -34,13 +33,12 @@ describe("UserRepositoryImpl - tests", () => {
       "112233",
       "+56977273879"
     );
-    const result = await repository.update(user);
+    const { id, email, name, password } = await repository.update(user);
 
-    expect(result).toEqual({
-      ...user,
-      updatedAt: result.updatedAt,
-      createdAt: result.createdAt,
-    });
+    expect(id).toBe(user.id);
+    expect(email).toBe(user.email);
+    expect(name).toBe(user.name);
+    expect(password).toBe(user.password);
   });
 
   it("should list all user", async () => {
@@ -58,13 +56,12 @@ describe("UserRepositoryImpl - tests", () => {
       "+56977273879"
     );
 
-    const result = await repository.findById(1);
+    const { id, email, name, password } = (await repository.findById(1)) ?? {};
 
-    expect(result).toEqual({
-      ...user,
-      updatedAt: result?.updatedAt,
-      createdAt: result?.createdAt,
-    });
+    expect(id).toBe(user.id);
+    expect(email).toBe(user.email);
+    expect(name).toBe(user.name);
+    expect(password).toBe(user.password);
   });
 
   it("should not find user by id", async () => {

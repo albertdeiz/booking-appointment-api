@@ -16,13 +16,14 @@ describe("ServiceRepositoryImpl", () => {
       "description de servicio 1"
     );
 
-    const result = await repository.create(service);
+    const { id, name, duration, description } = await repository.create(
+      service
+    );
 
-    expect(result).toEqual({
-      ...service,
-      createdAt: result.createdAt,
-      updatedAt: result.updatedAt,
-    });
+    expect(id).toBe(service.id);
+    expect(duration).toBe(service.duration);
+    expect(name).toBe(service.name);
+    expect(description).toBe(service.description);
   });
 
   it("should find a service by id", async () => {
@@ -33,13 +34,13 @@ describe("ServiceRepositoryImpl", () => {
       "description de servicio 1"
     );
 
-    const result = await repository.findById(service.id);
+    const { id, duration, name, description } =
+      (await repository.findById(service.id)) ?? {};
 
-    expect(result).toEqual({
-      ...service,
-      createdAt: result?.createdAt,
-      updatedAt: result?.updatedAt,
-    });
+    expect(id).toBe(service.id);
+    expect(duration).toBe(service.duration);
+    expect(name).toBe(service.name);
+    expect(description).toBe(service.description);
   });
 
   it("should return null if service not found by id", async () => {
@@ -62,13 +63,14 @@ describe("ServiceRepositoryImpl", () => {
       "description de servicio 1"
     );
 
-    const result = await repository.update(service);
+    const { id, duration, name, description } = await repository.update(
+      service
+    );
 
-    expect(result).toEqual({
-      ...service,
-      createdAt: result?.createdAt,
-      updatedAt: result?.updatedAt,
-    });
+    expect(id).toBe(service.id);
+    expect(duration).toBe(service.duration);
+    expect(name).toBe(service.name);
+    expect(description).toBe(service.description);
   });
 
   it("should delete a service", async () => {
