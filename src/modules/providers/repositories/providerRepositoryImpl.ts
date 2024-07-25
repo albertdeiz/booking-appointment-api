@@ -2,6 +2,10 @@ import { ProviderRepository } from "./providerRepository";
 import { Provider } from "../entities/provider";
 import { Service } from "../../services/entities/service";
 import { prisma } from "../../../infrastructure/database/prismaClient";
+import {
+  Provider as PrismaProvider,
+  Service as PrismaService,
+} from "@prisma/client";
 
 export class ProviderRepositoryImpl implements ProviderRepository {
   async create(provider: Provider): Promise<Provider> {
@@ -30,8 +34,17 @@ export class ProviderRepositoryImpl implements ProviderRepository {
       createdProvider.id,
       createdProvider.name,
       createdProvider.services.map(
-        (service) => new Service(service.id, service.name, service.duration)
+        (service: PrismaService) =>
+          new Service(
+            service.id,
+            service.name,
+            service.duration,
+            service.description ?? "",
+            service.updatedAt,
+            service.createdAt
+          )
       ),
+      createdProvider.updatedAt,
       createdProvider.createdAt
     );
   }
@@ -51,8 +64,17 @@ export class ProviderRepositoryImpl implements ProviderRepository {
           provider.id,
           provider.name,
           provider.services.map(
-            (service) => new Service(service.id, service.name, service.duration)
+            (service: PrismaService) =>
+              new Service(
+                service.id,
+                service.name,
+                service.duration,
+                service.description ?? "",
+                service.updatedAt,
+                service.createdAt
+              )
           ),
+          provider.updatedAt,
           provider.createdAt
         )
       : null;
@@ -66,13 +88,22 @@ export class ProviderRepositoryImpl implements ProviderRepository {
     });
 
     return providers.map(
-      (provider) =>
+      (provider: PrismaProvider & { services: PrismaService[] }) =>
         new Provider(
           provider.id,
           provider.name,
           provider.services.map(
-            (service) => new Service(service.id, service.name, service.duration)
+            (service: PrismaService) =>
+              new Service(
+                service.id,
+                service.name,
+                service.duration,
+                service.description ?? "",
+                service.updatedAt,
+                service.createdAt
+              )
           ),
+          provider.updatedAt,
           provider.createdAt
         )
     );
@@ -84,12 +115,14 @@ export class ProviderRepositoryImpl implements ProviderRepository {
       data: {
         name: provider.name,
         services: {
-          set: provider.services.map(({ id, duration, name, description }) => ({
-            id,
-            duration,
-            name,
-            description,
-          })),
+          set: provider.services.map(
+            ({ id, duration, name, description }: Service) => ({
+              id,
+              duration,
+              name,
+              description,
+            })
+          ),
         },
       },
       include: {
@@ -101,8 +134,17 @@ export class ProviderRepositoryImpl implements ProviderRepository {
       updatedProvider.id,
       updatedProvider.name,
       updatedProvider.services.map(
-        (service) => new Service(service.id, service.name, service.duration)
+        (service: PrismaService) =>
+          new Service(
+            service.id,
+            service.name,
+            service.duration,
+            service.description ?? "",
+            service.updatedAt,
+            service.createdAt
+          )
       ),
+      updatedProvider.updatedAt,
       updatedProvider.createdAt
     );
   }

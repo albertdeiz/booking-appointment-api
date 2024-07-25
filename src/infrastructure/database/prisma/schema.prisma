@@ -39,6 +39,7 @@ model Service {
 model Provider {
   id        Int      @id @default(autoincrement())
   name      String
+  updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
   // Relationships

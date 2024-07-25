@@ -1,6 +1,7 @@
 import { UserRepository } from "./userRepository";
 import { User } from "../entities/user";
 import { prisma } from "../../../infrastructure/database/prismaClient";
+import { User as PrismaUser } from "@prisma/client";
 
 export class UserRepositoryImpl implements UserRepository {
   async create(user: User): Promise<User> {
@@ -46,7 +47,8 @@ export class UserRepositoryImpl implements UserRepository {
     const users = await prisma.user.findMany();
 
     return users.map(
-      (user) => new User(user.id, user.name, user.email, user.password)
+      (user: PrismaUser) =>
+        new User(user.id, user.name, user.email, user.password)
     );
   }
 

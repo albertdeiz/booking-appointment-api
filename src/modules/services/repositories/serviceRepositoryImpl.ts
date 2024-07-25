@@ -1,6 +1,7 @@
 import { ServiceRepository } from "./serviceRepository";
 import { Service } from "../entities/service";
 import { prisma } from "../../../infrastructure/database/prismaClient";
+import { Service as PrismaService } from "@prisma/client";
 
 export class ServiceRepositoryImpl implements ServiceRepository {
   async create(service: Service): Promise<Service> {
@@ -43,7 +44,7 @@ export class ServiceRepositoryImpl implements ServiceRepository {
     const services = await prisma.service.findMany();
 
     return services.map(
-      (service) =>
+      (service: PrismaService) =>
         new Service(
           service.id,
           service.name,

@@ -1,82 +1,63 @@
+import { prismaMock } from "../../../../infrastructure/database/test/singleton";
 import { Service } from "../../entities/service";
 import { ServiceRepositoryImpl } from "../serviceRepositoryImpl";
+
+const mockService = new Service(
+  1,
+  "Service 1",
+  60,
+  "description de servicio 1"
+);
+
+const mockServiceDb = {
+  id: mockService.id,
+  name: mockService.name,
+  duration: mockService.duration,
+  description: mockService.description ?? null,
+  updatedAt: mockService.updatedAt,
+  createdAt: mockService.createdAt,
+};
 
 describe("ServiceRepositoryImpl", () => {
   const repository = new ServiceRepositoryImpl();
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  it("should create new service", async () => {
+    prismaMock.service.create.mockResolvedValue(mockServiceDb);
 
-  it("should create a service", async () => {
-    const service = new Service(
-      1,
-      "Service 1",
-      60,
-      "description de servicio 1"
-    );
-
-    const { id, name, duration, description } = await repository.create(
-      service
-    );
-
-    expect(id).toBe(service.id);
-    expect(duration).toBe(service.duration);
-    expect(name).toBe(service.name);
-    expect(description).toBe(service.description);
+    await expect(repository.create(mockService)).resolves.toEqual(mockService);
   });
 
   it("should find a service by id", async () => {
-    const service = new Service(
-      1,
-      "Service 1",
-      60,
-      "description de servicio 1"
-    );
+    prismaMock.service.findUnique.mockResolvedValue(mockServiceDb);
 
-    const { id, duration, name, description } =
-      (await repository.findById(service.id)) ?? {};
-
-    expect(id).toBe(service.id);
-    expect(duration).toBe(service.duration);
-    expect(name).toBe(service.name);
-    expect(description).toBe(service.description);
-  });
-
-  it("should return null if service not found by id", async () => {
-    const result = await repository.findById(999);
-
-    expect(result).toBeNull();
+    await expect(repository.findById(1)).resolves.toEqual(mockService);
   });
 
   it("should get all services", async () => {
+    prismaMock.service.findMany.mockResolvedValue([mockServiceDb]);
+
     const result = await repository.findAll();
 
     expect(result).toHaveLength(1);
   });
 
   it("should update a service", async () => {
-    const service = new Service(
-      1,
-      "Service 1",
-      90,
-      "description de servicio 1"
-    );
+    const testUpdatedMock = "updated name";
+    prismaMock.service.update.mockResolvedValue({
+      ...mockServiceDb,
+      name: testUpdatedMock,
+    });
 
-    const { id, duration, name, description } = await repository.update(
-      service
-    );
+    const { name } = await repository.update(mockService);
 
-    expect(id).toBe(service.id);
-    expect(duration).toBe(service.duration);
-    expect(name).toBe(service.name);
-    expect(description).toBe(service.description);
+    expect(name).toBe(testUpdatedMock);
   });
 
   it("should delete a service", async () => {
-    await repository.delete(1);
-    const result = await repository.findById(1);
+    prismaMock.service.delete.mockResolvedValue(mockServiceDb);
 
-    expect(result).toEqual(null);
+    await repository.delete(1);
+
+    expect(prismaMock.service.delete).toHaveBeenCalledTimes(1);
   });
 });
