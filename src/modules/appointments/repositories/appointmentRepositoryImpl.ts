@@ -17,10 +17,14 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
     });
   }
 
-  async findAvailableSlots(providerId: number, date: Date): Promise<Date[]> {
+  async findAvailableSlots(
+    providerId: number,
+    serviceId: number,
+    date: Date
+  ): Promise<Date[]> {
     const appointments = await prisma.appointment.findMany({
       where: {
-        providerId: providerId,
+        providerId,
         startTime: {
           gte: new Date(date.setHours(0, 0, 0, 0)),
           lt: new Date(date.setHours(23, 59, 59, 999)),
@@ -31,21 +35,42 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
       },
     });
 
+    const service = await prisma.service.findFirstOrThrow({
+      where: {
+        id: serviceId,
+      },
+      select: {
+        duration: true,
+        bufferTime: true,
+      },
+    });
+
     const availableSlots: Date[] = [];
-    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+    const startOfDay = new Date(date.setHours(9, 0, 0, 0));
+    const endOfDay = new Date(date.setHours(18, 0, 0, 0));
+
+    const rec = (
+      availableDates: Date[],
+      starDate: Date,
+      reservedDates: Date[]
+    ): Date[] => {
+      if (reservedDates.length < 1) {
+        return availableDates;
+      }
+    };
 
     let currentTime = startOfDay;
 
     for (const appointment of appointments) {
+      const duration = appointment.duration * 60000;
+      const bufferTime = appointment.bufferTime * 60000;
+
       const appointmentStart = new Date(appointment.startTime);
       const appointmentEnd = new Date(
-        appointmentStart.getTime() +
-          appointment.duration * 60000 +
-          appointment.bufferTime * 60000
+        appointmentStart.getTime() + duration + bufferTime
       );
 
-      if (currentTime < appointmentStart) {
+      if (currentTime.getTime() < appointmentStart.getTime()) {
         availableSlots.push(new Date(currentTime));
         currentTime = appointmentEnd;
       } else {
@@ -73,7 +98,9 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
           appointment.startTime,
           appointment.duration,
           appointment.status,
-          appointment.bufferTime
+          appointment.bufferTime,
+          appointment.updatedAt,
+          appointment.createdAt
         )
       : null;
   }
@@ -100,7 +127,9 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
       updatedAppointment.startTime,
       updatedAppointment.duration,
       updatedAppointment.status,
-      updatedAppointment.bufferTime
+      updatedAppointment.bufferTime,
+      updatedAppointment.updatedAt,
+      updatedAppointment.createdAt
     );
   }
 

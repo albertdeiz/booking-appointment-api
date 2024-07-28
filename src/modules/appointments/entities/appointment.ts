@@ -7,6 +7,8 @@ export class Appointment {
     public startTime: Date,
     public duration: number,
     public status: string,
-    public bufferTime: number
+    public bufferTime: number,
+    public updatedAt: Date = new Date(),
+    public createdAt: Date = new Date()
   ) {}
 }

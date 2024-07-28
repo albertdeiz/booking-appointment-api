@@ -55,7 +55,6 @@ model Appointment {
   startTime  DateTime
   duration   Int // Duration in minutes
   status     String
-  bufferTime Int // Buffer time in minutes
   updatedAt  DateTime @updatedAt
   createdAt  DateTime @default(now())
 
