@@ -8,26 +8,7 @@ interface Slot {
   end: Date;
 }
 
-const date = new Date();
-const hi = new Date(date.setHours(9, 0, 0, 0));
-const hf = new Date(date.setHours(16, 0, 0, 0));
-
-let appointments: Appointment[] = [
-  {
-    startTime: new Date(date.setHours(9, 0, 0, 0)),
-    duration: 45,
-  },
-  {
-    startTime: new Date(date.setHours(10, 30, 0, 0)),
-    duration: 45,
-  },
-  {
-    startTime: new Date(date.setHours(12, 0, 0, 0)),
-    duration: 45,
-  },
-];
-
-const getUnavailableSlots = (appointments: Appointment[]): Slot[] =>
+export const getUnavailableSlots = (appointments: Appointment[]): Slot[] =>
   appointments.map((appointment) => {
     const startTime = appointment.startTime.getTime();
     const duration = appointment.duration * 60000;
@@ -38,7 +19,7 @@ const getUnavailableSlots = (appointments: Appointment[]): Slot[] =>
     };
   });
 
-const getAvailableSlots = (
+export const getAvailableSlots = (
   start: Date,
   end: Date,
   unavailableSlots: Slot[]
@@ -91,14 +72,13 @@ const getSlots = (start: Date, end: Date, serviceTime: number): Slot[] => {
   return slots;
 };
 
-const show = ({ start, end }: Slot) => [
-  start.toLocaleTimeString(),
-  end.toLocaleTimeString(),
-];
-
-getAvailableSlots(hi, hf, getUnavailableSlots(appointments))
-  .reduce(
-    (acc, { start, end }) => [...acc, ...getSlots(start, end, 60)],
+export const getSlotsForService = (
+  startDate: Date,
+  endDate: Date,
+  unavailableSlots: Slot[],
+  serviceTime: number
+) =>
+  getAvailableSlots(startDate, endDate, unavailableSlots).reduce(
+    (acc, { start, end }) => [...acc, ...getSlots(start, end, serviceTime)],
     [] as Slot[]
-  )
-  .map(show);
+  );
